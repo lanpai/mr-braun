@@ -104,7 +104,8 @@ client.on('message', async (msg) => {
                 let ffmpegVideo = await new ffmpeg(VIDEO_FILE);
                 await ffmpegVideo.fnExtractFrameToJPG(FRAMES_DIR, {
                     frame_rate: FRAME_RATE,
-                    file_name: '%s'
+                    file_name: '%s',
+                    size: '61x34'
                 });
                 const frames = fs.readdirSync(FRAMES_DIR);
                 frames.sort((a, b) => {
