@@ -37,6 +37,13 @@ function CreateEmbed(content) {
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+    client.user.setPresence({
+        status: 'dnd',
+        activity: {
+            name: '📺',
+            type: 'WATCHING'
+        }
+    });
 });
 
 client.on('message', async (msg) => {
