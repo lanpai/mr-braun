@@ -68,7 +68,7 @@ client.on('message', async (msg) => {
                 return;
             }
             
-            let embed = await msg.channel.send(CreateEmbed(`Searching: ${URL}`));
+            let embed;
             
             isBusy = true;
 
@@ -81,23 +81,23 @@ client.on('message', async (msg) => {
                 isBusy = false;
                 isPlaying = false;
                 if (err.stderr === 'WARNING: Unable to extract video title\nERROR: Video unavailable')
-                    embed.edit(CreateEmbed('Not a valid YouTube video URL!'));
+                    msg.channel.send(CreateEmbed('Not a valid YouTube video URL!'));
                 else {
-                    embed.edit(CreateEmbed('Unknown error!'));
+                    msg.channel.send(CreateEmbed('Unknown error!'));
                     console.log(err);
                 }
             });
 
-            video.on('info', (info) => {
+            video.on('info', async (info) => {
                 size = info.size;
                 title = info.title;
-                embed.edit(CreateEmbed(`Downloading: ${URL} (${Math.floor(size/100000)/10}M)`));
+                embed = await msg.channel.send(CreateEmbed(`Downloading: ${URL} (${Math.floor(size/100000)/10}M)`));
             });
 
             video.pipe(fs.createWriteStream(VIDEO_FILE));
 
             video.on('end', async () => {
-                embed.edit(CreateEmbed(`Extracting frames: ${URL} (${Math.floor(size/100000)/10}M)`));
+                embed.edit(CreateEmbed(`Rendering frames: ${URL} (${Math.floor(size/100000)/10}M)`));
 
                 // Extracting frames
                 fs.rmdirSync(FRAMES_DIR, { recursive: true });
@@ -118,7 +118,6 @@ client.on('message', async (msg) => {
                 frames.shift();
 
                 // Turn frames into ASCII
-                embed.edit(CreateEmbed(`Rendering frames: ${URL} (${Math.floor(size/100000)/10}M)`));
                 function EditFrame(i) {
                     return new Promise((res) => {
                         [ file, x, y, n ] = frames[i].match(/([0-9]+)x([0-9]+)_([0-9]+)\.jpg/);
