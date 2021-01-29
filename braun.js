@@ -91,12 +91,13 @@ client.on('message', async (msg) => {
             video.on('info', async (info) => {
                 size = info.size;
                 title = info.title;
-                embed = await msg.channel.send(CreateEmbed(`Downloading: ${URL} (${Math.floor(size/100000)/10}M)`));
+                embed = msg.channel.send(CreateEmbed(`Downloading: ${URL} (${Math.floor(size/100000)/10}M)`));
             });
 
             video.pipe(fs.createWriteStream(VIDEO_FILE));
 
             video.on('end', async () => {
+                embed = await embed;
                 embed.edit(CreateEmbed(`Rendering frames: ${URL} (${Math.floor(size/100000)/10}M)`));
 
                 // Extracting frames
